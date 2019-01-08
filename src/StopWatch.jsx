@@ -8,6 +8,10 @@ const StopWatch = (props) => {
     const onChange = (event) => {
         props.onSecondsChanged(event.target.value);
     };
+
+    const styling = {
+        color: props.time <= 10000 ? '#FE5C5C' : '#000000'
+    };
     
 
         
@@ -16,7 +20,13 @@ const StopWatch = (props) => {
         <div>
             <div 
                 className="display-time">
-                {time.getTime(props.time)}
+                {
+                    props.status ==='started'
+                    && <div className="display-time" style={styling}>
+                        {time.getTime(props.time)}
+                        </div>
+                }
+                
             </div>
             <input 
                 className="display-time"

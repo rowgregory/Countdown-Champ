@@ -106,7 +106,7 @@ class Timer extends Component {
                 </div>
 
                 <div className="App">
-                    <div className="App-title">Stop Watch</div>
+                    <div className="App-title">Countdown Timer</div>
                     <StopWatch 
                         seconds ={this.state.seconds}
                         status={this.state.status}
