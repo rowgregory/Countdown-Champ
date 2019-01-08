@@ -3,6 +3,7 @@ import './App.css'
 import Clock from './Clock';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import StopWatch from './StopWatch';
+import Controls from './Controls';
 
 
 class Timer extends Component {
@@ -14,7 +15,14 @@ class Timer extends Component {
             time: 0,
             status: null
         }
+        this.startTimer = this.startTimer.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
+        this.resetTimer = this.resetTimer.bind(this);
         this.onSecondsChanged = this.onSecondsChanged.bind(this);
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.interval);
     }
 
     onSecondsChanged(seconds){
@@ -26,8 +34,47 @@ class Timer extends Component {
             
             } else {
                 this.setState(() =>({ seconds: 0, time: 0 }));
-            }
+            };
+        };
+    }
+
+    startTimer(){
+        if(this.state.status !== 'started'){
+            this.interval = setInterval(() => {
+                if(this.state.time !== 0) {
+                    this.setState(prevState => ({
+                        time: prevState.time - 10
+                    }))
+                } else {
+                    this.setState(() => ({ seconds: 0, status: null, time: 0}))
+                
+                    clearInterval(this.interval);
+                }
+            }, 10);
+        this.setState(() => ({ status: 'started'}));
+        
+        };
+    }
+
+    stopTimer(){
+        if(this.state.status && this.state.status === 'started') {
+            clearInterval(this.interval);
+            this.setState((prevState) => {
+                return ({
+                    status:'stopped',
+                    seconds: Math.floor(prevState.time / 1000)
+                });
+            });
         }
+    }
+
+    resetTimer(){
+        clearInterval(this.interval);
+        this.setState(() => ({
+            seconds: 0,
+            time: 0,
+            status:null
+        }));
     }
 
     changedDeadLine() {
@@ -39,37 +86,48 @@ class Timer extends Component {
 
         return (
             <div>
-            <div className="App">
-                <div className="App-title">
-                    Countdown to {this.state.deadLine}
+                <div className="App">
+                    <div className="App-title">
+                        Countdown to {this.state.deadLine}
+                    </div>
+                    <Clock 
+                        deadline={this.state.deadLine}
+                    />
+                    <Form inline>
+                        <FormControl
+                            className="Deadline-input" 
+                            placeholder='new date'
+                            onChange={event => this.setState({newDeadline: event.target.value})}
+                            />
+                        <Button onClick = { () => this.changedDeadLine() } >
+                            Submit
+                        </Button>
+                    </Form>
                 </div>
-                <Clock 
-                    deadline={this.state.deadLine}
-                />
-                <Form inline>
-                    <FormControl
-                        className="Deadline-input" 
-                        placeholder='new date'
-                        onChange={event => this.setState({newDeadline: event.target.value})}
-                        />
-                    <Button onClick = { () => this.changedDeadLine() } >
-                        Submit
-                    </Button>
-                </Form>
-            </div>
 
-            <div className="App">
-                <div className="App-title">Stop Watch</div>
-                <StopWatch 
-                    seconds ={this.state.seconds}
-                    time={this.state.time}
-                    onSecondsChanged={this.onSecondsChanged}
-                />
-                
+                <div className="App">
+                    <div className="App-title">Stop Watch</div>
+                    <StopWatch 
+                        seconds ={this.state.seconds}
+                        status={this.state.status}
+                        time={this.state.time}
+                        onSecondsChanged={this.onSecondsChanged}>
+                    </StopWatch>
+                    <div>
+                    <Controls  
+                        startTimer={this.startTimer}
+                        stopTimer={this.stopTimer}
+                        resetTimer={this.resetTimer}
+                        status={this.state.status}
+                        canStart={this.state.seconds > 0} >
+                    </Controls>
+
+                    </div>
+                    
+                </div>
             </div>
-        </div>
-        )
-    }
+        );
+    };
 }
 
 export default Timer;

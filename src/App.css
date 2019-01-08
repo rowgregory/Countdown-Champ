@@ -18,3 +18,11 @@
 .display-time{
     text-align:center;
 }
+.controls {
+    width: 300px;
+}
+
+.controls.btn-group > button {
+    height: 80px;
+    width: 100%;
+}
